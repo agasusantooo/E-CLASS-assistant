@@ -237,14 +237,17 @@ patterns = {
     r"(?:apa saja|sebutkan|daftar) kelas(?: yang)? tersedia": lambda _: get_kelas_list(),
     r"(?:apa saja|sebutkan|daftar|apa) (?:tugas|PR)(?: untuk| di)? (.*)": lambda matches: get_tugas(matches[0].strip().lower()),
     r"(?:apa saja|sebutkan|daftar) semua tugas(?: yang ada)?": lambda _: get_all_tugas_detail(),
-    r"(?:info|detail) (?:tugas )?(.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
-    r"(?:info|detail) tugas (.*)   (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
+    r"(?:info|ditel) (?:tugas )?(.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
+    r"(?:ditel) (?:tugas )?(.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
+    r"(?:ditel) (?:tugas )?(.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
+    r"(?:apa ditel) tugas (.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
     r"(?:apa saja|sebutkan|daftar) semua tugas(?: beserta ditel-nya)?": lambda _: get_all_tugas_detail(),
     r"deskripsi tugas (.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
     r"deadline tugas (.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
     r"kelas apa saja yang tersedia?": lambda _: get_kelas_list(),
     r"kelas saya?": lambda _: get_kelas_list(),
     r"kelasku?": lambda _: get_kelas_list(),
+    r"info kelas?": lambda _: get_kelas_list(),
     r"daftar kelas yang bisa diambil": lambda _: get_kelas_list(),
     r"tolong beri info tugas untuk kelas (.*)": lambda matches: get_tugas(matches[0].strip().lower()),
     r"bisa kasih tahu semua tugas yang ada?": lambda _: get_all_tugas_detail(),
@@ -260,6 +263,9 @@ patterns = {
     r"(?:apa saja|sebutkan|daftar|apa) (?:tugas|PR)(?: untuk| di)? (.*)": lambda matches: get_tugas(matches[0].strip().lower()),
     r"(?:info|ditel) tugas (.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
     r"(?:info|ditel) tugas (.*)": lambda matches: get_tugas_detail(last_class_requested, matches[0].strip().lower()),
+    r"(?:apa) tugas (.*) di (.*)": lambda matches: get_tugas_detail(matches[1].strip().lower(), matches[0].strip().lower()),
+    r"(?:apa) tugas (.*)": lambda matches: get_tugas_detail(last_class_requested, matches[0].strip().lower()),
+    r"(?:info|ditel) tugas (.*) (?:apa)": lambda matches: get_tugas_detail(last_class_requested, matches[0].strip().lower()),
     r"tugas (.*)": lambda matches: get_tugas_detail(last_class_requested, matches[0].strip().lower()),
     r"(?:apa saja|sebutkan|daftar) semua tugas(?: beserta deadline-nya)?": lambda _: get_all_tugas_detail(),
     r"deadline tugas (.*) di (.*)": lambda matches: get_deadline(matches[1].strip().lower(), matches[0].strip().lower()),
@@ -268,7 +274,7 @@ patterns = {
 kelas_sinonim = {
     "apa saja": ["sebutkan", "daftar", "apa sih", "kasih tau","mau liat"],
     "tugas" : ["PR","tgs"],
-    "ditel" : ["detail"],
+    "ditel" : ["detail","deskripsi","ceritakan","info","informasi","cerita","jelaskan","jelasin"],
     "kelas": ["matkul","MATKUL", "mata kuliah", "pelajaran","kls"],
     "tersedia": ["ada", "yang bisa diambil", "tersedia saat ini"],
     "tugas": ["pekerjaan", "tugas kuliah", "tugas akademik"],
@@ -284,7 +290,8 @@ kelas_sinonim = {
     "keamanan komputer":["kakom"],
     "etika profesi teknologi informasi":["etprof"],
     "data warehouse":["dw"],
-    "daftar" : ["list"]
+    "daftar" : ["list"],
+    "nomor" : ["no"],
 }
 
 last_class_requested = None
@@ -308,6 +315,7 @@ def get_all_tugas_by_kelas():
         for tugas_name in tugas_list:
             all_tugas_by_kelas[kelas_name].append(tugas_name)
     return "\n".join([f"{kelas_name}:\n" + "\n".join(f"- {tugas}" for tugas in tugas_list) for kelas_name, tugas_list in all_tugas_by_kelas.items()])
+
 # Fungsi untuk mendapatkan daftar kelas
 def get_kelas_list():
     kelas_list = "\n".join(kelas.keys())
