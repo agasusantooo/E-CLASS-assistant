@@ -1,6 +1,7 @@
 import re
 import tkinter as tk
 from tkinter import scrolledtext
+from fuzzywuzzy import fuzz
 
 # Data kelas dan tugas
 kelas = {
@@ -317,7 +318,7 @@ def get_tugas(kelas_name):
     if kelas_name in kelas:
         tugas_list = kelas[kelas_name]["tugas"]
         tugas_str = "\n".join(f"{i+1}. {tugas}" for i, tugas in enumerate(tugas_list))
-        return f"Berikut adalah daftar tugas untuk {kelas_name}:\n{tugas_str}\n\nSilahkan pilih nomor tugas untuk melihat detailnya."
+        return f"Berikut adalah daftar tugas untuk {kelas_name}:\n{tugas_str}\n\nSilahkan pilih nomor tugas untuk melihat detailnya.\nContoh: 'nomor 1'"
     else:
         return "Tolong ulangi pertanyaan dan sertakan nama kelas."
 
@@ -386,11 +387,31 @@ def get_kelas_list():
     return f"Berikut adalah daftar kelas yang Anda ambil:\n{kelas_list}"
 
 # Fungsi untuk mendapatkan daftar tugas untuk kelas tertentu
-def get_tugas(kelas_name):
+def get_tugas_detail(kelas_name, tugas_name):
     if kelas_name in kelas:
         tugas_list = kelas[kelas_name]["tugas"]
-        tugas_str = "\n".join(f"{i+1}. {tugas}" for i, tugas in enumerate(tugas_list))
-        return f"Berikut adalah daftar tugas untuk {kelas_name}:\n{tugas_str}"
+        if tugas_name in tugas_list:
+            tugas = tugas_list[tugas_name]
+            deskripsi = tugas.get("deskripsi", "Deskripsi tidak tersedia.")
+            deadline = tugas.get("deadline", "Deadline tidak tersedia.")
+            return f"Detail untuk tugas {tugas_name} di kelas {kelas_name}:\nDeskripsi: {deskripsi}\nDeadline: {deadline}"
+        else:
+            # Pencarian string parsial
+            max_similarity = -1
+            matching_tugas = None
+            for existing_tugas_name in tugas_list:
+                similarity = fuzz.partial_ratio(tugas_name, existing_tugas_name)
+                if similarity > max_similarity:
+                    max_similarity = similarity
+                    matching_tugas = existing_tugas_name
+
+            if max_similarity > 70:  # Ambil jika kesamaan cukup tinggi
+                tugas = tugas_list[matching_tugas]
+                deskripsi = tugas.get("deskripsi", "Deskripsi tidak tersedia.")
+                deadline = tugas.get("deadline", "Deadline tidak tersedia.")
+                return f"Detail untuk tugas {matching_tugas} di kelas {kelas_name}:\nDeskripsi: {deskripsi}\nDeadline: {deadline}"
+            else:
+                return f"Tidak dapat menemukan tugas yang cocok untuk '{tugas_name}' di kelas {kelas_name}."
     else:
         return "Tolong ulangi pertanyaan dan sertakan nama kelas."
 
