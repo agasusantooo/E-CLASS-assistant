@@ -272,7 +272,7 @@ patterns = {
 }
 
 kelas_sinonim = {
-    "apa saja": ["sebutkan", "daftar", "apa sih", "kasih tau","mau liat"],
+    "apa saja": ["sebutkan", "daftar", "apa sih", "kasih tau","mau liat","mau lihat"],
     "tugas" : ["PR","tgs"],
     "ditel" : ["detail","deskripsi","ceritakan","info","informasi","cerita","jelaskan","jelasin"],
     "kelas": ["matkul","MATKUL", "mata kuliah", "pelajaran","kls"],
